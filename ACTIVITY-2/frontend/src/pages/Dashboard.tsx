@@ -17,6 +17,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [newNote, setNewNote] = useState({ title: '', content: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [editForm, setEditForm] = useState({ title: '', content: '' });
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -100,6 +102,47 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
     }
   };
 
+  const handleEditNote = (note: Note) => {
+    setEditingNote(note);
+    setEditForm({ title: note.title, content: note.content });
+  };
+
+  const handleUpdateNote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!editingNote) return;
+    
+    // Check if we still have a valid token
+    const token = localStorage.getItem('token');
+    if (!token) {
+      onLogout();
+      return;
+    }
+
+    try {
+      setError('');
+      const response = await api.patch(`/notes/${editingNote.id}`, editForm);
+      setNotes(notes.map(note => 
+        note.id === editingNote.id ? response.data : note
+      ));
+      setEditingNote(null);
+      setEditForm({ title: '', content: '' });
+    } catch (err: any) {
+      console.error('Error updating note:', err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        onLogout();
+      } else {
+        setError('Failed to update note. Please try again.');
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingNote(null);
+    setEditForm({ title: '', content: '' });
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     onLogout();
@@ -171,17 +214,70 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
           <div className="mt-8">
             <h2 className="text-lg font-medium mb-4">Your Notes</h2>
+            
+            {editingNote && (
+              <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg shadow mb-6">
+                <h3 className="text-lg font-medium mb-4">Edit Note</h3>
+                <form onSubmit={handleUpdateNote} className="space-y-4">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Title"
+                      value={editForm.title}
+                      onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                      className="w-full p-2 border rounded"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <textarea
+                      placeholder="Content"
+                      value={editForm.content}
+                      onChange={(e) => setEditForm({...editForm, content: e.target.value})}
+                      className="w-full p-2 border rounded"
+                      rows={3}
+                      required
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      type="submit"
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                    >
+                      Update Note
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCancelEdit}
+                      className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+            
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {notes.map((note) => (
                 <div key={note.id} className="bg-white p-4 rounded-lg shadow">
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium text-lg">{note.title}</h3>
-                    <button
-                      onClick={() => handleDeleteNote(note.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditNote(note)}
+                        className="text-blue-500 hover:text-blue-700 text-sm"
+                        disabled={editingNote?.id === note.id}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteNote(note.id)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                   <p className="mt-2 text-gray-600">{note.content}</p>
                   <p className="mt-2 text-sm text-gray-400">
