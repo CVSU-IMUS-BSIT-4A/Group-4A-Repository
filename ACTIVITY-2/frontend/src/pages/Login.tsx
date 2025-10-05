@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import './login.css';
 
 interface LoginProps {
   onLogin: () => void;
@@ -26,26 +27,33 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-header">
+          <h2 className="login-title">Welcome Back</h2>
+          <p className="login-subtitle">Please enter your credentials to login</p>
+        </div>
+        
+        {error && <div className="error-message">{error}</div>}
+        
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="email">
-              Email
+          <div className="form-group">
+            <label className="form-label" htmlFor="email">
+              Email Address
             </label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="form-input"
+              placeholder="Enter your email"
               required
             />
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2" htmlFor="password">
+          
+          <div className="form-group">
+            <label className="form-label" htmlFor="password">
               Password
             </label>
             <input
@@ -53,23 +61,26 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="form-input"
+              placeholder="Enter your password"
               required
             />
           </div>
+          
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="login-button"
           >
-            Login
+            Sign In
           </button>
-          <p className="mt-4 text-center">
+          
+          <p className="login-footer">
             Don't have an account?{' '}
             <span 
-              className="text-blue-500 cursor-pointer hover:underline"
+              className="register-link"
               onClick={() => navigate('/register')}
             >
-              Register here
+              Create an account
             </span>
           </p>
         </form>
