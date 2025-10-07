@@ -11,23 +11,33 @@ function Login() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    console.log('Attempting login with:', { email, password: '***' });
     try {
       const res = await api.post('/auth/login', { email, password });
+      console.log('Login response:', res.data);
       localStorage.setItem('token', res.data.access_token);
-      navigate('/');
+      // Force page reload to update authentication state
+      window.location.href = '/';
     } catch (err: any) {
-      setError('Login failed');
+      console.error('Login error:', err);
+      console.error('Error response:', err.response?.data);
+      setError(err.response?.data?.message || 'Login failed');
     }
   };
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={onSubmit}>
-        <input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input placeholder="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit">Login</button>
-      </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="login-wrap">
+      <div>
+        <div className="login-brand" style={{ color: '#3b82f6' }}>Welcome</div>
+        <div className="login-sub">Sign in to continue to Activity5 Blog.</div>
+      </div>
+      <div className="login-card">
+        <form onSubmit={onSubmit} className="stack">
+          <input placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <button type="submit" className="primary">Log in</button>
+          {error && <p style={{ color: '#ef4444', margin: 0 }}>{error}</p>}
+        </form>
+      </div>
     </div>
   );
 }
@@ -47,18 +57,28 @@ function Posts() {
     await load();
   };
   return (
-    <div>
+    <div className="posts-container">
       <h2>Posts</h2>
-      <div>
-        <input placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <input placeholder="content" value={content} onChange={(e) => setContent(e.target.value)} />
-        <button onClick={create}>Create</button>
+      <div className="posts-layout">
+        <div className="post-form">
+          <input placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <textarea placeholder="content" value={content} onChange={(e) => setContent(e.target.value)} rows={5} />
+          <button className="primary" onClick={create}>Create</button>
+        </div>
+        <div className="posts-sidebar">
+          <h3>Recent Posts</h3>
+          <ul className="post-list">
+            {posts.map((p) => (
+              <li key={p.id}>
+                <Link to={`/posts/${p.id}`}>
+                  <h4>{p.title}</h4>
+                  <p>{p.content}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <ul>
-        {posts.map((p) => (
-          <li key={p.id}><Link to={`/posts/${p.id}`}>{p.title}</Link></li>
-        ))}
-      </ul>
     </div>
   );
 }
@@ -133,23 +153,42 @@ function Register() {
 }
 
 function App() {
-  const token = !!localStorage.getItem('token');
-  const logout = () => { localStorage.removeItem('token'); window.location.href = '/login'; };
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
+
+  const logout = () => { 
+    localStorage.removeItem('token'); 
+    setIsAuthenticated(false);
+    window.location.href = '/login'; 
+  };
   return (
     <BrowserRouter>
-      <nav style={{ display: 'flex', gap: 12 }}>
-        <Link to="/">Home</Link>
-        {!token ? <>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </> : <button onClick={logout}>Logout</button>}
-      </nav>
-      <Routes>
-        <Route path="/" element={<Posts />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/posts/:id" element={<PostDetail />} />
-      </Routes>
+      <div className="app-shell">
+        <header className="header">
+          <div className="brand">Activity5 Blog</div>
+          <nav className="nav">
+            <Link to="/">Home</Link>
+            {!isAuthenticated ? <>
+              <Link to="/login">Login</Link>
+              <Link to="/register">Register</Link>
+            </> : <button onClick={logout}>Logout</button>}
+          </nav>
+        </header>
+        <main className="stack">
+          <div className="panel">
+            <Routes>
+              <Route path="/" element={<Posts />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/posts/:id" element={<PostDetail />} />
+            </Routes>
+          </div>
+        </main>
+      </div>
     </BrowserRouter>
   )
 }
