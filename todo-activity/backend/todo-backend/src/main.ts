@@ -19,7 +19,7 @@ async function bootstrap() {
 
 
   await app.listen(3000);
-  console.log('App is running at: http://localhost:3000');
+  console.log('App is running at: http://localhost:3000/tasks');
   console.log('Swagger Docs available at: http://localhost:3000/api-docs');
 }
 
