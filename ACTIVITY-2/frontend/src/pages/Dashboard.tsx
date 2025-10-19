@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axiosConfig';
+import './dashboard.css';
 
 interface Note {
   id: number;
@@ -19,6 +20,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const [error, setError] = useState<string>('');
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [editForm, setEditForm] = useState({ title: '', content: '' });
+  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -68,6 +71,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       const response = await api.post('/notes', newNote);
       setNotes([...notes, response.data]);
       setNewNote({ title: '', content: '' });
+      setShowModal(false); // Close modal after adding note
     } catch (err: any) {
       console.error('Error adding note:', err);
       if (err.response?.status === 401) {
@@ -105,6 +109,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const handleEditNote = (note: Note) => {
     setEditingNote(note);
     setEditForm({ title: note.title, content: note.content });
+    setShowEditModal(true);
   };
 
   const handleUpdateNote = async (e: React.FormEvent) => {
@@ -127,6 +132,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
       ));
       setEditingNote(null);
       setEditForm({ title: '', content: '' });
+      setShowEditModal(false);
     } catch (err: any) {
       console.error('Error updating note:', err);
       if (err.response?.status === 401) {
@@ -141,6 +147,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   const handleCancelEdit = () => {
     setEditingNote(null);
     setEditForm({ title: '', content: '' });
+    setShowEditModal(false);
   };
 
   const handleLogout = () => {
@@ -149,149 +156,186 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <div className="loading-container">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold">Notes App</h1>
-            </div>
-            <div className="flex items-center">
-              <button
-                onClick={handleLogout}
-                className="text-red-600 hover:text-red-800"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
+    <div className="dashboard-container">
+      {/* Navigation Bar */}
+      <nav className="dashboard-nav">
+        <div className="nav-content">
+          <h1 className="nav-title">📝 Notes App</h1>
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
+      {/* Main Content */}
+      <div className="dashboard-content">
+        {/* Error Message */}
+        {error && <div className="error-message">{error}</div>}
+
+        {/* Header with Add Note Button */}
+        <div className="dashboard-header">
+          <h2 className="header-title">My Notes</h2>
+          <button onClick={() => setShowModal(true)} className="add-note-btn">
+            <span style={{ fontSize: '1.5rem' }}>+</span> Add New Note
+          </button>
+        </div>
+
+        {/* Edit Form has been moved to a modal */}
+
+        {/* Notes Grid */}
+        {notes.length === 0 ? (
+          <div className="empty-state">
+            <p className="empty-state-text">
+              📭 No notes yet. Click "Add New Note" to create your first note!
+            </p>
+          </div>
+        ) : (
+          <div className="notes-grid">
+            {notes.map((note) => (
+              <div key={note.id} className="note-card">
+                <div className="note-header">
+                  <h3 className="note-title">{note.title}</h3>
+                  <div className="note-actions">
+                    <button
+                      onClick={() => handleEditNote(note)}
+                      className="note-action-btn note-edit-btn"
+                      disabled={editingNote?.id === note.id}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteNote(note.id)}
+                      className="note-action-btn note-delete-btn"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                <p className="note-content">{note.content}</p>
+                <p className="note-date">
+                  📅 {new Date(note.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Add Note Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">✨ Create New Note</h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="modal-close-btn"
+                type="button"
+                aria-label="Close"
+              >
+                &times;
+              </button>
             </div>
-          )}
-          
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-medium mb-4">Add New Note</h2>
-            <form onSubmit={handleAddNote} className="space-y-4">
-              <div>
+            <form onSubmit={handleAddNote} className="note-form">
+              <div className="form-group">
+                <label className="form-label">Title</label>
                 <input
                   type="text"
-                  placeholder="Title"
+                  placeholder="Enter note title"
                   value={newNote.title}
                   onChange={(e) => setNewNote({...newNote, title: e.target.value})}
-                  className="w-full p-2 border rounded"
+                  className="form-input"
                   required
                 />
               </div>
-              <div>
+              <div className="form-group">
+                <label className="form-label">Content</label>
                 <textarea
-                  placeholder="Content"
+                  placeholder="Enter note content"
                   value={newNote.content}
                   onChange={(e) => setNewNote({...newNote, content: e.target.value})}
-                  className="w-full p-2 border rounded"
-                  rows={3}
+                  className="form-input form-textarea"
                   required
                 />
               </div>
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Add Note
-              </button>
+              <div className="form-actions">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Create Note
+                </button>
+              </div>
             </form>
           </div>
+        </div>
+      )}
 
-          <div className="mt-8">
-            <h2 className="text-lg font-medium mb-4">Your Notes</h2>
-            
-            {editingNote && (
-              <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg shadow mb-6">
-                <h3 className="text-lg font-medium mb-4">Edit Note</h3>
-                <form onSubmit={handleUpdateNote} className="space-y-4">
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Title"
-                      value={editForm.title}
-                      onChange={(e) => setEditForm({...editForm, title: e.target.value})}
-                      className="w-full p-2 border rounded"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <textarea
-                      placeholder="Content"
-                      value={editForm.content}
-                      onChange={(e) => setEditForm({...editForm, content: e.target.value})}
-                      className="w-full p-2 border rounded"
-                      rows={3}
-                      required
-                    />
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      type="submit"
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                    >
-                      Update Note
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCancelEdit}
-                      className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
-            
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {notes.map((note) => (
-                <div key={note.id} className="bg-white p-4 rounded-lg shadow">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium text-lg">{note.title}</h3>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEditNote(note)}
-                        className="text-blue-500 hover:text-blue-700 text-sm"
-                        disabled={editingNote?.id === note.id}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteNote(note.id)}
-                        className="text-red-500 hover:text-red-700 text-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                  <p className="mt-2 text-gray-600">{note.content}</p>
-                  <p className="mt-2 text-sm text-gray-400">
-                    {new Date(note.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              ))}
-              {notes.length === 0 && (
-                <p className="text-gray-500">No notes yet. Create your first note above!</p>
-              )}
+      {/* Edit Note Modal */}
+      {showEditModal && editingNote && (
+        <div className="modal-overlay" onClick={handleCancelEdit}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">✏️ Edit Note</h2>
+              <button
+                onClick={handleCancelEdit}
+                className="modal-close-btn"
+                type="button"
+                aria-label="Close"
+              >
+                &times;
+              </button>
             </div>
+            <form onSubmit={handleUpdateNote} className="note-form">
+              <div className="form-group">
+                <label className="form-label">Title</label>
+                <input
+                  type="text"
+                  placeholder="Enter note title"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Content</label>
+                <textarea
+                  placeholder="Enter note content"
+                  value={editForm.content}
+                  onChange={(e) => setEditForm({...editForm, content: e.target.value})}
+                  className="form-input form-textarea"
+                  required
+                />
+              </div>
+              <div className="form-actions">
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Update Note
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
