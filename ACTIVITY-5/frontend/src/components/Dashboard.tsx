@@ -39,6 +39,7 @@ const Dashboard: React.FC = () => {
   const [comments, setComments] = useState<{ [postId: number]: Comment[] }>({});
   const [commentPages, setCommentPages] = useState<{ [postId: number]: number }>({});
   const [commentTotals, setCommentTotals] = useState<{ [postId: number]: number }>({});
+  const [commentCurrentPages, setCommentCurrentPages] = useState<{ [postId: number]: number }>({});
   const [newComments, setNewComments] = useState<{ [postId: number]: string }>({});
   const [expandedPosts, setExpandedPosts] = useState<Set<number>>(new Set());
   
@@ -79,7 +80,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const fetchComments = async (postId: number, page = 1) => {
+  const fetchComments = async (postId: number, page: number) => {
     try {
       const response = await commentsAPI.getByPost(postId, page, 5);
       const data: PaginatedResponse<Comment> = response.data;
@@ -93,6 +94,10 @@ const Dashboard: React.FC = () => {
       setComments(prev => ({ ...prev, [postId]: commentsWithAuthorId }));
       setCommentPages(prev => ({ ...prev, [postId]: data.totalPages }));
       setCommentTotals(prev => ({ ...prev, [postId]: data.total }));
+      setCommentCurrentPages(prev => ({
+        ...prev,
+        [postId]: page
+      }));
     } catch (error) {
       console.error('Failed to fetch comments:', error);
     }
@@ -123,7 +128,7 @@ const Dashboard: React.FC = () => {
     try {
       await commentsAPI.create(postId, commentContent);
       setNewComments(prev => ({ ...prev, [postId]: '' }));
-      fetchComments(postId); // Refresh comments for this post
+      fetchComments(postId, commentCurrentPages[postId] || 1); // Refresh comments for this post
     } catch (error) {
       console.error('Failed to create comment:', error);
     }
@@ -135,8 +140,13 @@ const Dashboard: React.FC = () => {
       newExpanded.delete(postId);
     } else {
       newExpanded.add(postId);
+      // Initialize or reset to page 1 when expanding comments
+      setCommentCurrentPages(prev => ({
+        ...prev,
+        [postId]: 1
+      }));
       if (!comments[postId]) {
-        fetchComments(postId);
+        fetchComments(postId, 1);
       }
     }
     setExpandedPosts(newExpanded);
@@ -158,7 +168,7 @@ const Dashboard: React.FC = () => {
 
     try {
       await commentsAPI.delete(postId, commentId);
-      fetchComments(postId); // Refresh comments for this post
+      fetchComments(postId, commentCurrentPages[postId] || 1); // Refresh comments for this post
     } catch (error) {
       console.error('Failed to delete comment:', error);
     }
@@ -198,7 +208,7 @@ const Dashboard: React.FC = () => {
       await commentsAPI.update(postId, commentId, editCommentContent);
       setEditingComment(null);
       setEditCommentContent('');
-      fetchComments(postId); // Refresh comments for this post
+      fetchComments(postId, commentCurrentPages[postId] || 1); // Refresh comments for this post
     } catch (error) {
       console.error('Failed to update comment:', error);
     }
@@ -523,7 +533,7 @@ const Dashboard: React.FC = () => {
                           
                           {commentPages[post.id] > 1 && (
                             <Pagination
-                              currentPage={1}
+                              currentPage={commentCurrentPages[post.id] || 1}
                               totalPages={commentPages[post.id]}
                               onPageChange={(page) => fetchComments(post.id, page)}
                             />

@@ -23,7 +23,8 @@ export class CommentsService {
       take: limit,
       order: { id: 'DESC' },
     });
-    return { data, total, page, limit };
+    const totalPages = Math.ceil(total / limit) || 1;
+    return { data, total, page, limit, totalPages };
   }
 
   async findOne(id: number) {

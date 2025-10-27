@@ -98,15 +98,15 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
       
       <button
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        disabled={currentPage >= totalPages}
         style={{
           padding: '8px 12px',
           border: '1px solid var(--border)',
           background: 'transparent',
           color: 'var(--text)',
           borderRadius: '6px',
-          cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-          opacity: currentPage === totalPages ? 0.5 : 1,
+          cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
+          opacity: currentPage >= totalPages ? 0.5 : 1,
         }}
       >
         Next
