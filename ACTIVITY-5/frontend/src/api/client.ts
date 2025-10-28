@@ -40,6 +40,11 @@ export interface Post {
   content: string;
   authorId?: number; // Computed field for convenience
   author?: User;
+  likeCount: number;
+  dislikeCount: number;
+  likedBy?: User[];
+  dislikedBy?: User[];
+  userReaction?: 'like' | 'dislike' | null;
   createdAt: string;
   updatedAt: string;
   comments?: Comment[];
@@ -51,6 +56,11 @@ export interface Comment {
   authorId?: number; // Computed field for convenience
   author?: User;
   postId: number;
+  likeCount: number;
+  dislikeCount: number;
+  likedBy?: User[];
+  dislikedBy?: User[];
+  userReaction?: 'like' | 'dislike' | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -103,6 +113,15 @@ export const postsAPI = {
   
   delete: (id: number) =>
     client.delete(`/posts/${id}`),
+    
+  like: (postId: number) =>
+    client.post<Post>(`/posts/${postId}/like`),
+    
+  dislike: (postId: number) =>
+    client.post<Post>(`/posts/${postId}/dislike`),
+    
+  getUserReaction: (postId: number) =>
+    client.get<{ reaction: 'like' | 'dislike' | null }>(`/posts/${postId}/reaction`),
 };
 
 // Comments API
@@ -118,6 +137,15 @@ export const commentsAPI = {
   
   delete: (postId: number, commentId: number) =>
     client.delete(`/posts/${postId}/comments/${commentId}`),
+    
+  like: (commentId: number) =>
+    client.post<Comment>(`/posts/0/comments/${commentId}/like`),
+    
+  dislike: (commentId: number) =>
+    client.post<Comment>(`/posts/0/comments/${commentId}/dislike`),
+    
+  getUserReaction: (commentId: number) =>
+    client.get<{ reaction: 'like' | 'dislike' | null }>(`/posts/0/comments/${commentId}/reaction`),
 };
 
 export default client;

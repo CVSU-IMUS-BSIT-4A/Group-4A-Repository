@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Comment } from '../comments/comment.entity';
 
@@ -18,6 +18,20 @@ export class PostEntity {
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
+
+  @Column({ default: 0 })
+  likeCount: number;
+
+  @Column({ default: 0 })
+  dislikeCount: number;
+
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
+  likedBy: User[];
+
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
+  dislikedBy: User[];
 
   @CreateDateColumn()
   createdAt: Date;

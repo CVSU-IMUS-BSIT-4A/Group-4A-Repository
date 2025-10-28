@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { PostEntity } from './post.entity';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -40,6 +41,91 @@ export class PostsService {
 
   async remove(id: number) {
     await this.repo.delete(id);
+  }
+
+  async likePost(postId: number, userId: number) {
+    const post = await this.repo.findOne({
+      where: { id: postId },
+      relations: ['likedBy', 'dislikedBy']
+    });
+    
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    // Check if user already liked
+    const alreadyLiked = post.likedBy?.some(user => user.id === userId);
+    const alreadyDisliked = post.dislikedBy?.some(user => user.id === userId);
+
+    // If already liked, remove like
+    if (alreadyLiked) {
+      post.likedBy = post.likedBy.filter(user => user.id !== userId);
+      post.likeCount = Math.max(0, post.likeCount - 1);
+    } else {
+      // Add like and remove dislike if exists
+      if (!post.likedBy) post.likedBy = [];
+      post.likedBy.push({ id: userId } as User);
+      post.likeCount++;
+      
+      if (alreadyDisliked) {
+        post.dislikedBy = post.dislikedBy.filter(user => user.id !== userId);
+        post.dislikeCount = Math.max(0, post.dislikeCount - 1);
+      }
+    }
+
+    return this.repo.save(post);
+  }
+
+  async dislikePost(postId: number, userId: number) {
+    const post = await this.repo.findOne({
+      where: { id: postId },
+      relations: ['likedBy', 'dislikedBy']
+    });
+    
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    // Check if user already disliked
+    const alreadyDisliked = post.dislikedBy?.some(user => user.id === userId);
+    const alreadyLiked = post.likedBy?.some(user => user.id === userId);
+
+    // If already disliked, remove dislike
+    if (alreadyDisliked) {
+      post.dislikedBy = post.dislikedBy.filter(user => user.id !== userId);
+      post.dislikeCount = Math.max(0, post.dislikeCount - 1);
+    } else {
+      // Add dislike and remove like if exists
+      if (!post.dislikedBy) post.dislikedBy = [];
+      post.dislikedBy.push({ id: userId } as User);
+      post.dislikeCount++;
+      
+      if (alreadyLiked) {
+        post.likedBy = post.likedBy.filter(user => user.id !== userId);
+        post.likeCount = Math.max(0, post.likeCount - 1);
+      }
+    }
+
+    return this.repo.save(post);
+  }
+
+  async getUserReaction(postId: number, userId: number): Promise<'like' | 'dislike' | null> {
+    const post = await this.repo.findOne({
+      where: { id: postId },
+      relations: ['likedBy', 'dislikedBy']
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    if (post.likedBy?.some(user => user.id === userId)) {
+      return 'like';
+    } else if (post.dislikedBy?.some(user => user.id === userId)) {
+      return 'dislike';
+    }
+    
+    return null;
   }
 }
 

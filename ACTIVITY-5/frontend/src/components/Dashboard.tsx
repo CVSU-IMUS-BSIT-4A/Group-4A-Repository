@@ -21,6 +21,24 @@ const DeleteIcon: React.FC<{ size?: number }> = ({ size = 16 }) => (
   </svg>
 );
 
+const LikeIcon: React.FC<{ filled?: boolean, size?: number }> = ({ filled = false, size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+  </svg>
+);
+
+const DislikeIcon: React.FC<{ filled?: boolean, size?: number }> = ({ filled = false, size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V3H6.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+  </svg>
+);
+
+const CommentIcon: React.FC<{ size?: number }> = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+  </svg>
+);
+
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -73,6 +91,26 @@ const Dashboard: React.FC = () => {
       setPosts(postsWithAuthorId);
       setTotalPages(data.totalPages);
       setTotal(data.total);
+      
+      // Fetch comment counts for each post
+      const commentCounts = await Promise.all(
+        postsWithAuthorId.map(async (post) => {
+          try {
+            const response = await commentsAPI.getByPost(post.id, 1, 1);
+            return { postId: post.id, total: response.data.total };
+          } catch (error) {
+            console.error(`Failed to fetch comment count for post ${post.id}:`, error);
+            return { postId: post.id, total: 0 };
+          }
+        })
+      );
+      
+      // Update commentTotals with the fetched counts
+      const newCommentTotals = { ...commentTotals };
+      commentCounts.forEach(({ postId, total }) => {
+        newCommentTotals[postId] = total;
+      });
+      setCommentTotals(newCommentTotals);
     } catch (error) {
       console.error('Failed to fetch posts:', error);
     } finally {
@@ -134,22 +172,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const toggleComments = (postId: number) => {
-    const newExpanded = new Set(expandedPosts);
-    if (newExpanded.has(postId)) {
-      newExpanded.delete(postId);
+  const toggleComments = async (postId: number) => {
+    const newExpandedPosts = new Set(expandedPosts);
+    if (newExpandedPosts.has(postId)) {
+      newExpandedPosts.delete(postId);
     } else {
-      newExpanded.add(postId);
-      // Initialize or reset to page 1 when expanding comments
-      setCommentCurrentPages(prev => ({
-        ...prev,
-        [postId]: 1
-      }));
-      if (!comments[postId]) {
-        fetchComments(postId, 1);
-      }
+      newExpandedPosts.add(postId);
+      await fetchComments(postId, 1);
     }
-    setExpandedPosts(newExpanded);
+    setExpandedPosts(newExpandedPosts);
   };
 
   const handleDeletePost = async (postId: number) => {
@@ -227,6 +258,111 @@ const Dashboard: React.FC = () => {
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  const handlePostReaction = async (postId: number, action: 'like' | 'dislike') => {
+    if (!user) return;
+    
+    try {
+      let updatedPost: Post;
+      
+      if (action === 'like') {
+        updatedPost = (await postsAPI.like(postId)).data;
+      } else {
+        updatedPost = (await postsAPI.dislike(postId)).data;
+      }
+      
+      setPosts(posts.map(post => 
+        post.id === postId ? { 
+          ...post, 
+          likeCount: updatedPost.likeCount, 
+          dislikeCount: updatedPost.dislikeCount,
+          userReaction: action
+        } : post
+      ));
+    } catch (error) {
+      console.error(`Failed to ${action} post:`, error);
+    }
+  };
+
+  const handleCommentReaction = async (commentId: number, action: 'like' | 'dislike') => {
+    if (!user) return;
+    
+    try {
+      let updatedComment: Comment;
+      
+      if (action === 'like') {
+        updatedComment = (await commentsAPI.like(commentId)).data;
+      } else {
+        updatedComment = (await commentsAPI.dislike(commentId)).data;
+      }
+      
+      // Find which post this comment belongs to
+      const post = posts.find(p => 
+        comments[p.id]?.some(c => c.id === commentId)
+      );
+      
+      if (post) {
+        setComments(prev => ({
+          ...prev,
+          [post.id]: prev[post.id].map(comment => 
+            comment.id === commentId ? { 
+              ...comment, 
+              likeCount: updatedComment.likeCount, 
+              dislikeCount: updatedComment.dislikeCount,
+              userReaction: action
+            } : comment
+          )
+        }));
+      }
+    } catch (error) {
+      console.error(`Failed to ${action} comment:`, error);
+    }
+  };
+
+  const renderReactionButtons = (
+    item: { 
+      id: number; 
+      likeCount: number; 
+      dislikeCount: number; 
+      userReaction?: 'like' | 'dislike' | null;
+      commentCount?: number;
+      onToggleComments?: (id: number) => void;
+    },
+    onLike: (id: number) => void,
+    onDislike: (id: number) => void,
+    size: 'sm' | 'md' = 'md'
+  ) => {
+    const iconSize = size === 'sm' ? 14 : 16;
+    const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
+    
+    return (
+      <div className="flex items-center space-x-6">
+        <button 
+          onClick={() => onLike(item.id)}
+          className={`flex items-center space-x-1 ${item.userReaction === 'like' ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
+        >
+          <LikeIcon filled={item.userReaction === 'like'} size={iconSize} />
+          <span className={textSize}>{item.likeCount}</span>
+        </button>
+        <button 
+          onClick={() => onDislike(item.id)}
+          className={`flex items-center space-x-1 ${item.userReaction === 'dislike' ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
+        >
+          <DislikeIcon filled={item.userReaction === 'dislike'} size={iconSize} />
+          <span className={textSize}>{item.dislikeCount}</span>
+        </button>
+        {item.onToggleComments && (
+          <button 
+            onClick={() => item.onToggleComments?.(item.id)}
+            className="flex items-center space-x-1 text-gray-500 hover:text-gray-700"
+          >
+            <CommentIcon size={iconSize} />
+            <span className={textSize}>{item.commentCount || 0} comments</span>
+          </button>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -356,29 +492,26 @@ const Dashboard: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <div style={{ 
-                    fontSize: '12px', 
-                    color: 'var(--muted)', 
-                    marginTop: '8px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
+                  <div className="mt-2 text-sm text-gray-500" style={{
+                    borderTop: '1px solid var(--border)',
+                    paddingTop: '12px',
+                    marginTop: '12px'
                   }}>
-                    <span>By {post.author?.name || 'Unknown'} • {formatDate(post.createdAt)}</span>
-                    <button
-                      onClick={() => toggleComments(post.id)}
-                      style={{
-                        background: 'none',
-                        border: '1px solid var(--border)',
-                        color: 'var(--primary)',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {expandedPosts.has(post.id) ? 'Hide' : 'Show'} Comments
-                    </button>
+                    <div className="mb-2">By {post.author?.name || 'Unknown'} • {formatDate(post.createdAt)}</div>
+                    <div className="text-sm text-gray-500">
+                      {renderReactionButtons(
+                        { 
+                          id: post.id, 
+                          likeCount: post.likeCount || 0, 
+                          dislikeCount: post.dislikeCount || 0,
+                          userReaction: post.userReaction,
+                          commentCount: commentTotals[post.id] || 0,
+                          onToggleComments: toggleComments
+                        },
+                        (id) => handlePostReaction(id, 'like'),
+                        (id) => handlePostReaction(id, 'dislike')
+                      )}
+                    </div>
                   </div>
 
                   {/* Comments Section */}
@@ -481,13 +614,21 @@ const Dashboard: React.FC = () => {
                                   ) : (
                                     // View mode
                                     <>
-                                      <div style={{ fontSize: '14px' }}>{comment.content}</div>
-                                      <div style={{ 
-                                        fontSize: '11px', 
-                                        color: 'var(--muted)', 
-                                        marginTop: '6px' 
-                                      }}>
-                                        By {comment.author?.name || 'Unknown'} • {formatDate(comment.createdAt)}
+                                      <div className="text-sm text-gray-500 mb-2">
+                                        {comment.content}
+                                      </div>
+                                      <div className="mt-1">
+                                        {renderReactionButtons(
+                                          { 
+                                            id: comment.id, 
+                                            likeCount: comment.likeCount || 0, 
+                                            dislikeCount: comment.dislikeCount || 0,
+                                            userReaction: comment.userReaction
+                                          },
+                                          (id) => handleCommentReaction(id, 'like'),
+                                          (id) => handleCommentReaction(id, 'dislike'),
+                                          'sm'
+                                        )}
                                       </div>
                                     </>
                                   )}

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, Request, ForbiddenException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, Request, ForbiddenException, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { CommentsService } from './comments.service';
@@ -43,6 +43,36 @@ export class CommentsController {
       throw new ForbiddenException('You can only delete your own comments');
     }
     return this.commentsService.remove(id);
+  }
+
+  @Post(':id/like')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  async likeComment(
+    @Param('id', ParseIntPipe) commentId: number,
+    @Request() req: any
+  ) {
+    return this.commentsService.likeComment(commentId, req.user.userId);
+  }
+
+  @Post(':id/dislike')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  async dislikeComment(
+    @Param('id', ParseIntPipe) commentId: number,
+    @Request() req: any
+  ) {
+    return this.commentsService.dislikeComment(commentId, req.user.userId);
+  }
+
+  @Get(':id/reaction')
+  @UseGuards(AuthGuard('jwt'))
+  async getUserReaction(
+    @Param('id', ParseIntPipe) commentId: number,
+    @Request() req: any
+  ) {
+    const reaction = await this.commentsService.getUserReaction(commentId, req.user.userId);
+    return { reaction };
   }
 }
 

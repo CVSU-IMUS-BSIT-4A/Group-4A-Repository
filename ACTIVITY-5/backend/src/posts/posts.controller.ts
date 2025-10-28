@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, Request, ForbiddenException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, Request, ForbiddenException, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { PostsService } from './posts.service';
@@ -45,6 +45,34 @@ export class PostsController {
     }
     return this.postsService.remove(id);
   }
+
+  @Post(':id/like')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  async likePost(
+    @Param('id', ParseIntPipe) postId: number,
+    @Request() req: any
+  ) {
+    return this.postsService.likePost(postId, req.user.userId);
+  }
+
+  @Post(':id/dislike')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  async dislikePost(
+    @Param('id', ParseIntPipe) postId: number,
+    @Request() req: any
+  ) {
+    return this.postsService.dislikePost(postId, req.user.userId);
+  }
+
+  @Get(':id/reaction')
+  @UseGuards(AuthGuard('jwt'))
+  async getUserReaction(
+    @Param('id', ParseIntPipe) postId: number,
+    @Request() req: any
+  ) {
+    const reaction = await this.postsService.getUserReaction(postId, req.user.userId);
+    return { reaction };
+  }
 }
-
-
