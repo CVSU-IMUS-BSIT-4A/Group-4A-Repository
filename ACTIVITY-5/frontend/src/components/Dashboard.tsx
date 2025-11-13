@@ -69,6 +69,10 @@ const Dashboard: React.FC = () => {
   // Edit state for comments
   const [editingComment, setEditingComment] = useState<number | null>(null);
   const [editCommentContent, setEditCommentContent] = useState('');
+  
+  // Delete confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'post' | 'comment', postId: number, commentId?: number } | null>(null);
 
   const limit = 6; // Changed to 6 to show 2 rows of 3 posts each
 
@@ -184,25 +188,37 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDeletePost = async (postId: number) => {
-    if (!confirm('Are you sure you want to delete this post?')) return;
-
-    try {
-      await postsAPI.delete(postId);
-      fetchPosts(); // Refresh posts
-    } catch (error) {
-      console.error('Failed to delete post:', error);
-    }
+    setDeleteTarget({ type: 'post', postId });
+    setShowDeleteModal(true);
   };
 
   const handleDeleteComment = async (postId: number, commentId: number) => {
-    if (!confirm('Are you sure you want to delete this comment?')) return;
+    setDeleteTarget({ type: 'comment', postId, commentId });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
 
     try {
-      await commentsAPI.delete(postId, commentId);
-      fetchComments(postId, commentCurrentPages[postId] || 1); // Refresh comments for this post
+      if (deleteTarget.type === 'post') {
+        await postsAPI.delete(deleteTarget.postId);
+        fetchPosts(); // Refresh posts
+      } else if (deleteTarget.type === 'comment' && deleteTarget.commentId) {
+        await commentsAPI.delete(deleteTarget.postId, deleteTarget.commentId);
+        fetchComments(deleteTarget.postId, commentCurrentPages[deleteTarget.postId] || 1); // Refresh comments for this post
+      }
     } catch (error) {
-      console.error('Failed to delete comment:', error);
+      console.error('Failed to delete:', error);
+    } finally {
+      setShowDeleteModal(false);
+      setDeleteTarget(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
   };
 
   const handleEditPost = (post: Post) => {
@@ -746,6 +762,60 @@ const Dashboard: React.FC = () => {
                 {submitting ? 'Posting...' : 'Create Post'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={(e) => {
+          if (e.target === e.currentTarget) cancelDelete();
+        }}>
+          <div className="modal-content" style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h3>Confirm Delete</h3>
+              <button 
+                className="modal-close"
+                onClick={cancelDelete}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <p style={{ marginBottom: '24px', fontSize: '16px' }}>
+                Are you sure you want to delete this {deleteTarget?.type}?
+              </p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button
+                  onClick={cancelDelete}
+                  style={{
+                    padding: '10px 24px',
+                    background: 'transparent',
+                    color: 'var(--text)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  style={{
+                    padding: '10px 24px',
+                    background: '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
