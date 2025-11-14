@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { ApiTags, ApiQuery, ApiOperation } from '@nestjs/swagger';
 
-@ApiTags('weather') // This groups your endpoints in Swagger
+@ApiTags('weather')
 @Controller('weather')
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}

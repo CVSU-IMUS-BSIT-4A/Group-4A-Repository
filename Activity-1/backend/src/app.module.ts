@@ -13,7 +13,7 @@ import { Task } from './task/task.entity';
       password: '',
       database: 'todo_db',
       entities: [Task],
-      synchronize: true,
+      synchronize: false,
     }),
     TaskModule,
   ],
