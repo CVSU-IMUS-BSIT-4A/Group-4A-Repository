@@ -1,0 +1,25 @@
+.cart {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.cart h2 {
+  margin-top: 0;
+}
+
+.cart button {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  background-color: #198754;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cart button:hover {
+  background-color: #157347;
+}
