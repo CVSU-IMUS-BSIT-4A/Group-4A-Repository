@@ -1,0 +1,54 @@
+.toggle-form-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #f0f2f5;
+    color: #007bff;
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 10px 0;
+  }
+  
+  .toggle-form-btn:hover {
+    background-color: #eef2ff;
+    border-style: solid;
+  }
+  
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #999;
+    cursor: pointer;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .cancel-btn {
+    flex: 1;
+    padding: 10px;
+    background-color: #eee;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #ddd;
+  }
+  
+  .create-btn {
+    flex: 2;
+  }

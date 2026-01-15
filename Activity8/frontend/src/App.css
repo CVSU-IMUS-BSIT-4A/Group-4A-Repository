@@ -1,0 +1,60 @@
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  font-family: 'Inter', sans-serif;
+}
+
+.app-header {
+  background-color: #ffffff;
+  padding: 15px 25px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.app-header h1 span {
+  color: #007bff;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar-section {
+  width: 300px;
+  background-color: #fff;
+  border-right: 1px solid #eee;
+}
+
+.chat-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f2f5;
+  position: relative;
+}
+
+.empty-chat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #888;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 10px;
+  opacity: 0.3;
+}
