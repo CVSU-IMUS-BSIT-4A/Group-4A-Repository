@@ -1,4 +1,3 @@
-// src/orders/orders.service.ts
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -65,7 +64,7 @@ export class OrdersService {
 
     if (dto.items !== undefined) {
       // Restore stock for old items
-      for (const oldItem of order.items) {
+      for (const oldItem of order.items ?? []) {
         const product = oldItem.product;
         if (!product) continue;
         product.stock += oldItem.quantity;
@@ -104,14 +103,14 @@ export class OrdersService {
     if (!order) throw new NotFoundException('Order not found');
 
     // Restore stock safely
-    for (const item of order.items) {
+    for (const item of order.items ?? []) {
       const product = item.product;
       if (!product) continue;
       product.stock += item.quantity;
       await this.productsService.updateStock(product.id, product.stock);
     }
 
-    // This works because of cascade delete on Order entity
+    // Remove order (cascade deletes items)
     await this.ordersRepository.remove(order);
 
     return order; // return deleted order for Swagger
