@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { CreateReviewDto } from '../types';
+import React, { useState, useEffect } from 'react';
+import { CreateReviewDto, Review } from '../types';
 import './ReviewForm.css';
 
 interface ReviewFormProps {
@@ -7,33 +7,55 @@ interface ReviewFormProps {
   movieTitle: string;
   onSubmit: (review: CreateReviewDto) => void;
   onCancel: () => void;
+  existingReview?: Review;
 }
 
-const ReviewForm: React.FC<ReviewFormProps> = ({ movieId, movieTitle, onSubmit, onCancel }) => {
+const ReviewForm: React.FC<ReviewFormProps> = ({ 
+  movieId, 
+  movieTitle, 
+  onSubmit, 
+  onCancel,
+  existingReview 
+}) => {
   const [formData, setFormData] = useState<CreateReviewDto>({
-    reviewerName: '',
-    comment: '',
-    rating: 5,
+    reviewerName: existingReview?.reviewerName || '',
+    comment: existingReview?.comment || '',
+    rating: existingReview?.rating || 5,
     movieId,
   });
+
+  useEffect(() => {
+    if (existingReview) {
+      setFormData({
+        reviewerName: existingReview.reviewerName,
+        comment: existingReview.comment,
+        rating: existingReview.rating,
+        movieId: existingReview.movieId,
+      });
+    }
+  }, [existingReview, movieId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.reviewerName.trim() && formData.comment.trim()) {
       onSubmit(formData);
-      setFormData({
-        reviewerName: '',
-        comment: '',
-        rating: 5,
-        movieId,
-      });
+      if (!existingReview) {
+        setFormData({
+          reviewerName: '',
+          comment: '',
+          rating: 5,
+          movieId,
+        });
+      }
     }
   };
 
   return (
     <div className="review-form-overlay" onClick={onCancel}>
       <div className="review-form-container" onClick={(e) => e.stopPropagation()}>
-        <h2 className="review-form-title">Add Review for {movieTitle}</h2>
+        <h2 className="review-form-title">
+          {existingReview ? 'Edit Review' : 'Add Review'} for {movieTitle}
+        </h2>
         <form onSubmit={handleSubmit} className="review-form">
           <div className="form-group">
             <label htmlFor="reviewerName">Your Name</label>
@@ -81,7 +103,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ movieId, movieTitle, onSubmit, 
               Cancel
             </button>
             <button type="submit" className="submit-btn">
-              Submit Review
+              {existingReview ? 'Update Review' : 'Submit Review'}
             </button>
           </div>
         </form>

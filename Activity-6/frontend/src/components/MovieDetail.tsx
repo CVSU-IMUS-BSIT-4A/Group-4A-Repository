@@ -14,6 +14,7 @@ interface MovieDetailProps {
 const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onReviewAdded, onClose }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,7 +35,14 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onReviewAdded, onClose
 
   const handleSubmitReview = async (reviewData: CreateReviewDto) => {
     try {
-      await reviewsApi.create(reviewData);
+      if (editingReview) {
+        // Update existing review
+        await reviewsApi.update(editingReview.id, reviewData);
+        setEditingReview(null);
+      } else {
+        // Create new review
+        await reviewsApi.create(reviewData);
+      }
       setShowReviewForm(false);
       await loadReviews();
       onReviewAdded();
@@ -42,6 +50,27 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onReviewAdded, onClose
       console.error('Error submitting review:', error);
       alert('Failed to submit review. Please try again.');
     }
+  };
+
+  const handleEditReview = (review: Review) => {
+    setEditingReview(review);
+    setShowReviewForm(true);
+  };
+
+  const handleDeleteReview = async (reviewId: number) => {
+    try {
+      await reviewsApi.delete(reviewId);
+      await loadReviews();
+      onReviewAdded();
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      alert('Failed to delete review. Please try again.');
+    }
+  };
+
+  const handleCancelForm = () => {
+    setShowReviewForm(false);
+    setEditingReview(null);
   };
 
   const renderStars = (rating: number) => {
@@ -106,7 +135,11 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onReviewAdded, onClose
               {loading ? (
                 <div className="loading">Loading reviews...</div>
               ) : (
-                <ReviewList reviews={reviews} />
+                <ReviewList 
+                  reviews={reviews}
+                  onEdit={handleEditReview}
+                  onDelete={handleDeleteReview}
+                />
               )}
             </div>
           </div>
@@ -118,7 +151,8 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onReviewAdded, onClose
           movieId={movie.id}
           movieTitle={movie.title}
           onSubmit={handleSubmitReview}
-          onCancel={() => setShowReviewForm(false)}
+          onCancel={handleCancelForm}
+          existingReview={editingReview || undefined}
         />
       )}
     </>

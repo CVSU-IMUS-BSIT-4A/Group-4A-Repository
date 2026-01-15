@@ -64,5 +64,57 @@
   color: #831843;
   font-size: 14px;
   line-height: 1.6;
-  margin: 0;
+  margin: 0 0 12px 0;
+}
+
+.review-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #fce7f3;
+}
+
+.review-edit-btn,
+.review-delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.review-edit-btn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.review-edit-btn:hover {
+  background: #fde68a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+.review-delete-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.review-delete-btn:hover {
+  background: #fecaca;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.review-edit-btn svg,
+.review-delete-btn svg {
+  width: 16px;
+  height: 16px;
 }
