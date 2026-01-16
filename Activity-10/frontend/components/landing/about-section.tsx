@@ -38,7 +38,7 @@ export function AboutSection({ showLogo }: AboutSectionProps) {
                                             transition={{ duration: 0.5 }}
                                             className="inline-block"
                                         >
-                                            Occasio.
+                                            VenueFlow.
                                         </motion.span>
                                     ) : (
                                         <motion.div
@@ -55,7 +55,7 @@ export function AboutSection({ showLogo }: AboutSectionProps) {
                                                         ? "/whitelogo.png"
                                                         : "/blacklogo.png"
                                                 }
-                                                alt="Occasio"
+                                                alt="VenueFlow"
                                                 width={200}
                                                 height={60}
                                                 className="h-8 xs:h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
@@ -66,7 +66,7 @@ export function AboutSection({ showLogo }: AboutSectionProps) {
                             </div>
                         </h2>
                         <p className="text-sm xs:text-base sm:text-lg text-neutral-700 dark:text-white/70 leading-relaxed mb-2 sm:mb-3 md:mb-4">
-                            Occasio is your all-in-one event management platform designed to
+                            VenueFlow is your all-in-one event management platform designed to
                             make planning and organizing events effortless. Whether you&apos;re
                             organizing a small gathering or a large celebration, we provide
                             the tools you need to create unforgettable experiences.
@@ -74,7 +74,7 @@ export function AboutSection({ showLogo }: AboutSectionProps) {
                         <p className="text-sm xs:text-base sm:text-lg text-neutral-700 dark:text-white/70 leading-relaxed">
                             Our mission is to simplify event planning and help you create
                             memorable moments that bring people together. With intuitive
-                            features and powerful tools, Occasio makes it easy to manage every
+                            features and powerful tools, VenueFlow makes it easy to manage every
                             aspect of your events from start to finish.
                         </p>
                     </motion.div>

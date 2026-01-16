@@ -2,59 +2,52 @@
 
 import { motion } from "motion/react";
 import Link from "next/link";
-import Image from "next/image";
-import { useTheme } from "@/components/theme-provider";
+import { CalendarCheck, QrCode, ShieldCheck } from "lucide-react";
 
 export function AuthBranding() {
-    const { theme } = useTheme();
-
     return (
-        <div className="hidden md:flex w-1/2 items-center justify-center relative">
+        <div className="relative hidden w-1/2 items-center justify-center overflow-hidden bg-neutral-950 md:flex">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.25),_transparent_55%)]" />
             <motion.div
-                className="text-left px-8 lg:px-12"
+                className="relative z-10 max-w-md space-y-8 px-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
             >
-                <motion.div
-                    className="mb-4 flex items-center gap-3 md:gap-4"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 0.05, ease: "easeOut" }}
-                >
-                    <Link href="/" className="flex items-center gap-3 md:gap-4 cursor-pointer hover:opacity-80 transition-opacity">
-                        <Image
-                            src={theme === "dark" ? "/whitelogo.png" : "/blacklogo.png"}
-                            alt="Occasio"
-                            width={200}
-                            height={60}
-                            className="h-12 md:h-14 lg:h-16 xl:h-20 w-auto"
-                            priority
-                        />
-                        <span className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight">
-                            Occasio
-                        </span>
-                    </Link>
-                </motion.div>
-                <motion.p
-                    className="text-md md:text-lg lg:text-xl text-neutral-700 dark:text-white/70 font-normal tracking-wide"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
-                >
-                    Every Occasion, Perfectly Planned.
-                </motion.p>
+                <Link href="/" className="flex items-center gap-3 text-white">
+                    <span className="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-sky-600 shadow-lg shadow-emerald-500/30" />
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
+                            VenueFlow
+                        </p>
+                        <p className="text-xl font-semibold">Check-in Suite</p>
+                    </div>
+                </Link>
+
+                <div className="space-y-3">
+                    <h2 className="text-3xl font-semibold leading-tight">
+                        Event registration and QR access control, unified.
+                    </h2>
+                    <p className="text-sm text-white/70">
+                        Keep registration, ticketing, and entry scanning in one streamlined workflow.
+                    </p>
+                </div>
+
+                <div className="space-y-3 text-sm text-white/70">
+                    <div className="flex items-center gap-3">
+                        <CalendarCheck className="h-5 w-5 text-emerald-400" />
+                        Create and publish events instantly.
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <QrCode className="h-5 w-5 text-emerald-400" />
+                        Issue QR tickets with every registration.
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                        Verify entries at the venue in seconds.
+                    </div>
+                </div>
             </motion.div>
-            
-            {/* Copyright - Bottom Left */}
-            <motion.p
-                className="absolute bottom-4 left-4 lg:bottom-6 lg:left-6 text-xs md:text-sm text-neutral-600 dark:text-white/60"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.15, ease: "easeOut" }}
-            >
-                © 2026 Occasio. All rights reserved.
-            </motion.p>
         </div>
     );
 }

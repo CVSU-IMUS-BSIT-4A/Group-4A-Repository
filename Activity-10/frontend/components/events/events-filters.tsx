@@ -27,28 +27,28 @@ export function EventsFilters({
 }: EventsFiltersProps) {
     return (
         <motion.div
-            className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4"
+            className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 sm:flex-row sm:items-center sm:justify-between"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.1 }}
         >
             {/* Filter Tabs */}
-            <div className="flex items-center p-0.5 bg-neutral-100 dark:bg-neutral-900 rounded-lg w-fit">
+            <div className="flex items-center gap-1 rounded-full bg-neutral-100 p-1 dark:bg-neutral-800">
                 {FILTERS.map((filter) => (
                     <button
                         key={filter.value}
                         onClick={() => onFilterChange(filter.value)}
                         disabled={isLoading}
-                        className={`relative px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium rounded-md transition-colors disabled:cursor-not-allowed ${
+                        className={`relative rounded-full px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed ${
                             activeFilter === filter.value
                                 ? "text-white"
-                                : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                                : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white"
                         }`}
                     >
                         {activeFilter === filter.value && (
                             <motion.div
                                 layoutId="activeFilter"
-                                className="absolute inset-0 bg-neutral-900 dark:bg-white rounded-md"
+                                className="absolute inset-0 rounded-full bg-neutral-900 dark:bg-white"
                                 transition={{
                                     type: "tween",
                                     duration: 0.15,
@@ -64,13 +64,13 @@ export function EventsFilters({
 
             {/* Search Input */}
             <div className="relative flex-1 sm:max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
                 <input
                     type="text"
-                    placeholder="Search events..."
+                    placeholder="Search by name, location..."
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 sm:py-2 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:border-transparent transition-all"
+                    className="w-full rounded-full border border-neutral-200 bg-white py-2 pl-9 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 transition focus:outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-neutral-800 dark:bg-neutral-950 dark:text-white"
                 />
             </div>
         </motion.div>

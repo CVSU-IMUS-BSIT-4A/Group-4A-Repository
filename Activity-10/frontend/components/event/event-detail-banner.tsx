@@ -15,7 +15,7 @@ export function EventDetailBanner({ event }: EventDetailBannerProps) {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="relative w-full h-40 xs:h-48 sm:h-56 md:h-64 lg:h-80 rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6"
+            className="relative mb-6 h-44 w-full overflow-hidden rounded-3xl sm:h-60 lg:h-80"
         >
             {event.image ? (
                 <Image
@@ -33,12 +33,12 @@ export function EventDetailBanner({ event }: EventDetailBannerProps) {
                     }
                 />
             ) : (
-                <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-neutral-900 dark:from-neutral-700 dark:to-neutral-800 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.1),transparent)] opacity-60" />
-                    <ImageIcon className="w-16 h-16 text-neutral-600 dark:text-neutral-500" />
+                <div className="flex h-full w-full items-center justify-center bg-neutral-900">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.2),transparent_60%)]" />
+                    <ImageIcon className="h-16 w-16 text-white/50" />
                 </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
         </motion.div>
     );
 }

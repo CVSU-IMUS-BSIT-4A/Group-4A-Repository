@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import Link from "next/link"
 import {
   Building2,
@@ -12,7 +11,6 @@ import {
 import { useRouter } from "next/navigation"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
-import { useTheme } from "@/components/theme-provider"
 import {
   Sidebar,
   SidebarContent,
@@ -32,7 +30,6 @@ interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
   const router = useRouter()
-  const { theme } = useTheme()
   const { state } = useSidebar()
 
   // Get user data from localStorage if not provided
@@ -88,27 +85,9 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-2 px-2 py-2 hover:opacity-80 transition-opacity">
-          {state === "collapsed" ? (
-            <Image
-              src={theme === "dark" ? "/whitelogo.png" : "/blacklogo.png"}
-              alt="Occasio"
-              width={20}
-              height={20}
-              className="h-5 w-5"
-              priority
-            />
-          ) : (
-            <>
-              <Image
-                src={theme === "dark" ? "/whitelogo.png" : "/blacklogo.png"}
-                alt="Occasio"
-                width={32}
-                height={32}
-                className="h-8 w-8"
-                priority
-              />
-              <span className="truncate font-semibold text-sm">Occasio</span>
-            </>
+          <span className="h-8 w-8 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-sky-600" />
+          {state !== "collapsed" && (
+            <span className="truncate font-semibold text-sm">VenueFlow</span>
           )}
         </Link>
       </SidebarHeader>

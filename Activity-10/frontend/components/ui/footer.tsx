@@ -2,12 +2,9 @@
 
 import { motion } from "motion/react";
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
-import Image from "next/image";
-import { useTheme } from "@/components/theme-provider";
 
 export function Footer() {
     const currentYear = new Date().getFullYear();
-    const { theme } = useTheme();
 
     const socialLinks = [
         { icon: Facebook, href: "#", label: "Facebook" },
@@ -17,10 +14,10 @@ export function Footer() {
     ];
 
     const quickLinks = [
-        { label: "Home", href: "#hero" },
-        { label: "About", href: "#about" },
-        { label: "Events", href: "#events" },
-        { label: "Contact", href: "#contact" },
+        { label: "Overview", href: "#overview" },
+        { label: "Features", href: "#features" },
+        { label: "Check-in", href: "#checkin" },
+        { label: "Organizers", href: "#organizers" },
     ];
 
     const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -41,20 +38,14 @@ export function Footer() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <div className="flex items-center gap-2 xs:gap-3 mb-3 xs:mb-4">
-                            <Image
-                                src={theme === "dark" ? "/whitelogo.png" : "/blacklogo.png"}
-                                alt="Occasio"
-                                width={150}
-                                height={45}
-                                className="h-8 xs:h-10 w-auto"
-                            />
+                        <div className="flex items-center gap-3 mb-3 xs:mb-4">
+                            <span className="h-9 w-9 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-sky-600" />
                             <span className="text-lg xs:text-xl font-semibold text-neutral-900 dark:text-white">
-                                Occasio
+                                VenueFlow
                             </span>
                         </div>
                         <p className="text-sm xs:text-base text-neutral-700 dark:text-white/70 mb-3 xs:mb-4">
-                            Every Occasion, Perfectly Planned.
+                            Registration, tickets, and QR entry in one workflow.
                         </p>
                         <div className="flex gap-2 xs:gap-3 sm:gap-4">
                             {socialLinks.map((social, index) => (
@@ -110,7 +101,7 @@ export function Footer() {
                         <ul className="space-y-2 xs:space-y-3">
                             <li className="flex items-start gap-2 xs:gap-3 text-sm xs:text-base text-neutral-700 dark:text-white/70">
                                 <Mail className="w-4 h-4 xs:w-5 xs:h-5 mt-0.5 shrink-0" />
-                                <span className="break-words">contact@occasio.com</span>
+                                <span className="break-words">support@venueflow.app</span>
                             </li>
                             <li className="flex items-start gap-2 xs:gap-3 text-sm xs:text-base text-neutral-700 dark:text-white/70">
                                 <Phone className="w-4 h-4 xs:w-5 xs:h-5 mt-0.5 shrink-0" />
@@ -133,7 +124,7 @@ export function Footer() {
                     transition={{ duration: 0.6, delay: 0.4 }}
                 >
                     <p className="text-neutral-600 dark:text-white/50 text-xs xs:text-sm">
-                        © {currentYear} Occasio. All rights reserved.
+                        © {currentYear} VenueFlow. All rights reserved.
                     </p>
                 </motion.div>
             </div>

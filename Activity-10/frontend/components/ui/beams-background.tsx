@@ -267,7 +267,7 @@ export function BeamsBackground({
                                 >
                                     <Image
                                         src={theme === "dark" ? "/whitelogo.png" : "/blacklogo.png"}
-                                        alt="Occasio"
+                                        alt="VenueFlow"
                                         width={250}
                                         height={75}
                                         className="h-12 md:h-16 lg:h-20 w-auto"
@@ -286,7 +286,7 @@ export function BeamsBackground({
                                         damping: 15
                                     }}
                                 >
-                                    Occasio
+                                    VenueFlow
                                 </motion.span>
                             </div>
                             <motion.h5
@@ -295,7 +295,7 @@ export function BeamsBackground({
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.8 }}
                     >
-                                Every Occasion, Perfectly <motion.span 
+                                Every entry, perfectly <motion.span 
                                     className="relative inline-block px-2 py-1 cursor-pointer"
                                     whileHover={{ 
                                         rotate: -3,

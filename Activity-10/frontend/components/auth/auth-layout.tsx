@@ -1,6 +1,5 @@
 "use client";
 
-import { BeamsBackground } from "@/components/ui/beams-background";
 import { AuthBranding } from "./auth-branding";
 import { AuthFormContainer } from "./auth-form-container";
 import { AutofillFix } from "@/components/autofill-fix";
@@ -17,13 +16,11 @@ export function AuthLayout({
     themeTogglePosition = "top-right"
 }: AuthLayoutProps) {
     return (
-        <div className="relative min-h-screen w-full">
+        <div className="min-h-screen w-full bg-neutral-950 text-white">
             <AutofillFix />
-            <BeamsBackground hideContent={true} />
-            
-            <div className="relative z-10 min-h-screen flex">
+            <div className="min-h-screen flex">
                 <AuthBranding />
-                <AuthFormContainer 
+                <AuthFormContainer
                     showThemeToggle={showThemeToggle}
                     themeTogglePosition={themeTogglePosition}
                 >

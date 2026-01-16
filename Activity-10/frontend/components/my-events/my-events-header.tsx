@@ -59,22 +59,25 @@ export function MyEventsHeader({
     return (
         <>
             <motion.div
-                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4 mb-3 sm:mb-4"
+                className="mb-6 flex flex-col gap-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.15 }}
             >
             {/* Title Row */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="p-2 sm:p-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900">
-                        <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5" />
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600">
+                        <CalendarDays className="h-5 w-5" />
                     </div>
                     <div>
-                        <h1 className="text-lg sm:text-2xl font-bold text-neutral-900 dark:text-white">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
+                            My schedule
+                        </p>
+                        <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white">
                             My Events
                         </h1>
-                        <p className="text-[10px] sm:text-xs text-neutral-600 dark:text-neutral-400">
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
                             {eventsCount} {eventsCount === 1 ? "event" : "events"} {eventType === "organized" ? "organized" : "joined"}
                         </p>
                     </div>
@@ -84,14 +87,14 @@ export function MyEventsHeader({
                 <div className="flex items-center gap-2 sm:hidden">
                     <Link
                         href="/events"
-                        className="inline-flex items-center justify-center p-2 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors"
+                        className="inline-flex items-center justify-center rounded-full border border-neutral-200 bg-white p-2 text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-200 dark:hover:bg-neutral-900"
                         title="Browse Events"
                     >
                         <Search className="w-4 h-4" />
                     </Link>
                     <button
                         onClick={handleOpenModal}
-                        className="relative inline-flex items-center justify-center p-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-full hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
+                        className="relative inline-flex items-center justify-center rounded-full bg-neutral-900 p-2 text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
                         title="Organize Event"
                     >
                         <Plus className="w-4 h-4" />
@@ -107,13 +110,13 @@ export function MyEventsHeader({
             </div>
 
             {/* Controls Row */}
-            <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+            <div className="flex flex-wrap items-center gap-3 sm:justify-between">
                 {/* Event Type Toggle */}
-                <div className="flex items-center p-0.5 bg-neutral-100 dark:bg-neutral-900 rounded-full">
+                <div className="flex items-center rounded-full bg-neutral-100 p-1 dark:bg-neutral-800">
                     <button
                         onClick={() => onEventTypeChange("joined")}
                         disabled={isLoading}
-                        className={`relative px-2.5 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-sm font-medium rounded-full transition-colors disabled:cursor-not-allowed ${
+                        className={`relative rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed ${
                             eventType === "joined"
                                 ? "text-white"
                                 : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
@@ -122,7 +125,7 @@ export function MyEventsHeader({
                         {eventType === "joined" && (
                             <motion.div
                                 layoutId="eventTypeToggle"
-                                className="absolute inset-0 bg-neutral-900 dark:bg-white rounded-full"
+                                className="absolute inset-0 rounded-full bg-neutral-900 dark:bg-white"
                                 transition={{
                                     type: "tween",
                                     duration: 0.15,
@@ -145,7 +148,7 @@ export function MyEventsHeader({
                     <button
                         onClick={() => onEventTypeChange("organized")}
                         disabled={isLoading}
-                        className={`relative px-2.5 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-sm font-medium rounded-full transition-colors disabled:cursor-not-allowed ${
+                        className={`relative rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed ${
                             eventType === "organized"
                                 ? "text-white"
                                 : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
@@ -154,7 +157,7 @@ export function MyEventsHeader({
                         {eventType === "organized" && (
                             <motion.div
                                 layoutId="eventTypeToggle"
-                                className="absolute inset-0 bg-neutral-900 dark:bg-white rounded-full"
+                                className="absolute inset-0 rounded-full bg-neutral-900 dark:bg-white"
                                 transition={{
                                     type: "tween",
                                     duration: 0.15,
@@ -180,14 +183,14 @@ export function MyEventsHeader({
                 <div className="hidden sm:flex items-center gap-2">
                     <Link
                         href="/events"
-                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-medium rounded-full hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors"
+                        className="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-700 transition hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-200 dark:hover:bg-neutral-900"
                     >
                         <Search className="w-4 h-4" />
                         <span>Browse</span>
                     </Link>
                     <button
                         onClick={handleOpenModal}
-                        className="relative inline-flex items-center justify-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm font-medium rounded-full hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
+                        className="relative inline-flex items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Organize</span>

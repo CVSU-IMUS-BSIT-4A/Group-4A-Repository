@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 // Convert pathname to readable page name
 const getPageName = (pathname: string): string => {
     if (pathname === "/") {
-        return "Occasio";
+        return "VenueFlow";
     }
 
     // Remove leading slash and split by path segments
@@ -33,7 +33,7 @@ const getPageName = (pathname: string): string => {
         })
         .join(" - ");
 
-    return `${pageName} - Occasio`;
+    return `${pageName} - VenueFlow`;
 };
 
 export function DynamicTitle() {

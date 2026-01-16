@@ -60,7 +60,7 @@ export function MyEventsPagination({
 
     return (
         <motion.div
-            className="flex items-center justify-center gap-2 py-4 mt-4 sticky bottom-0 bg-neutral-50/80 dark:bg-neutral-950/80 backdrop-blur-sm md:relative md:bg-transparent md:backdrop-blur-none"
+            className="flex items-center justify-center gap-2 py-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.1 }}
@@ -69,7 +69,7 @@ export function MyEventsPagination({
             <button
                 onClick={onPrevPage}
                 disabled={currentPage === 1 || isLoading}
-                className="p-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 aria-label="Previous page"
             >
                 <ChevronLeft className="w-4 h-4" />
@@ -90,10 +90,10 @@ export function MyEventsPagination({
                             key={page}
                             onClick={() => onPageChange(page)}
                             disabled={isLoading}
-                            className={`min-w-[36px] h-9 px-3 rounded-lg text-sm font-medium transition-colors ${
+                            className={`min-w-[38px] h-9 px-3 rounded-full text-xs font-semibold uppercase tracking-wide transition-colors ${
                                 currentPage === page
                                     ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
-                                    : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                    : "bg-white dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900"
                             } disabled:cursor-not-allowed`}
                         >
                             {page}
@@ -106,7 +106,7 @@ export function MyEventsPagination({
             <button
                 onClick={onNextPage}
                 disabled={currentPage === totalPages || isLoading}
-                className="p-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 aria-label="Next page"
             >
                 <ChevronRight className="w-4 h-4" />

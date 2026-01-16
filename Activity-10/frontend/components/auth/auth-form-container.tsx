@@ -26,23 +26,13 @@ export function AuthFormContainer({
     };
 
     return (
-        <div className="w-full md:w-1/2 relative">
-            {/* Glass Background */}
-            <div className="absolute inset-0 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-l border-neutral-200/50 dark:border-white/10"></div>
-            
-            {/* Theme Toggle */}
+        <div className="relative w-full bg-white dark:bg-neutral-950 md:w-1/2">
             {showThemeToggle && (
                 <motion.button
                     onClick={toggleTheme}
                     className={cn(
                         getThemeToggleClasses(),
-                        "p-2.5 md:p-3 rounded-full",
-                        "bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md",
-                        "border border-neutral-300 dark:border-white/20",
-                        "shadow-lg hover:shadow-xl",
-                        "text-neutral-900 dark:text-white",
-                        "transition-all duration-300",
-                        "hover:bg-white dark:hover:bg-neutral-800"
+                        "rounded-full border border-neutral-200 bg-white p-2 text-neutral-700 shadow-sm transition hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-200 dark:hover:bg-neutral-900",
                     )}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -61,7 +51,7 @@ export function AuthFormContainer({
                                     exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
                                     transition={{ duration: 0.3, ease: "easeInOut" }}
                                 >
-                                    <Sun className="w-5 h-5 md:w-6 md:h-6" />
+                                    <Sun className="h-5 w-5" />
                                 </motion.div>
                             ) : (
                                 <motion.div
@@ -71,25 +61,26 @@ export function AuthFormContainer({
                                     exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
                                     transition={{ duration: 0.3, ease: "easeInOut" }}
                                 >
-                                    <Moon className="w-5 h-5 md:w-6 md:h-6" />
+                                    <Moon className="h-5 w-5" />
                                 </motion.div>
                             )}
                         </AnimatePresence>
+                    ) : theme === "dark" ? (
+                        <Sun className="h-5 w-5" />
                     ) : (
-                        theme === "dark" ? <Sun className="w-5 h-5 md:w-6 md:h-6" /> : <Moon className="w-5 h-5 md:w-6 md:h-6" />
+                        <Moon className="h-5 w-5" />
                     )}
                 </motion.button>
             )}
-            
-            {/* Form Content */}
-            <div className="relative z-10 flex items-center justify-center min-h-screen px-3 xs:px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-12 xs:py-16 sm:py-20">
+
+            <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-10">
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.25, ease: "easeOut" }}
                     className="w-full max-w-md"
                 >
-                    <div className="p-4 xs:p-5 sm:p-6 md:p-8">
+                    <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                         {children}
                     </div>
                 </motion.div>

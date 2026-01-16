@@ -50,9 +50,8 @@ export function EventCard({ event, index }: EventCardProps) {
             className="group"
         >
             <Link href={`/event/${event.id}`} className="block">
-                <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-md transition-all duration-200">
-                    {/* Image Header */}
-                    <div className="relative h-32 bg-gradient-to-br from-neutral-800 to-neutral-900 dark:from-neutral-700 dark:to-neutral-800 shrink-0">
+                <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-neutral-300 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-950">
+                    <div className="relative h-36 bg-neutral-900">
                         {event.image ? (
                             <>
                                 <Image
@@ -68,53 +67,51 @@ export function EventCard({ event, index }: EventCardProps) {
                                         event.image.match(/^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\./)
                                     }
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                             </>
                         ) : (
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.1),transparent)] opacity-60" />
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.15),transparent_60%)]" />
                         )}
-                        <div className="absolute top-2 left-3 right-3 flex items-center justify-between z-10">
+                        <div className="absolute left-4 top-4 right-4 z-10 flex items-center justify-between">
+                            <span className="rounded-full bg-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
+                                {event.category}
+                            </span>
                             <span
-                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm ${status.bg} ${status.text}`}
+                                className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-wider ${status.bg} ${status.text}`}
                             >
                                 {status.label}
-                            </span>
-                            <span className="px-2 py-0.5 bg-white/10 backdrop-blur-sm rounded text-xs font-medium text-white/90">
-                                {event.category}
                             </span>
                         </div>
                         {!event.image && (
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <ImageIcon className="w-8 h-8 text-neutral-600 dark:text-neutral-500 opacity-50" />
+                                <ImageIcon className="h-8 w-8 text-white/50" />
                             </div>
                         )}
                     </div>
 
-                    {/* Content */}
-                    <div className="p-3">
-                        <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-1 line-clamp-1 group-hover:text-neutral-700 dark:group-hover:text-neutral-200 transition-colors">
+                    <div className="p-4">
+                        <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1 line-clamp-1 transition-colors group-hover:text-neutral-700 dark:group-hover:text-neutral-200">
                             {event.title}
                         </h3>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-500 mb-3 line-clamp-1">
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 line-clamp-2">
                             {event.description}
                         </p>
 
-                        {/* Compact Details */}
-                        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-xs text-neutral-600 dark:text-neutral-400">
-                            <div className="flex items-center gap-1.5">
-                                <Calendar className="w-3 h-3 shrink-0" />
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs text-neutral-600 dark:text-neutral-400">
+                            <div className="flex items-center gap-2">
+                                <Calendar className="h-3.5 w-3.5 shrink-0" />
                                 <span className="truncate">{formattedDate}</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <Clock className="w-3 h-3 shrink-0" />
+                            <div className="flex items-center gap-2">
+                                <Clock className="h-3.5 w-3.5 shrink-0" />
                                 <span className="truncate">{event.time}</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <MapPin className="w-3 h-3 shrink-0" />
+                            <div className="flex items-center gap-2">
+                                <MapPin className="h-3.5 w-3.5 shrink-0" />
                                 <span className="truncate">{event.location}</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <Users className="w-3 h-3 shrink-0" />
+                            <div className="flex items-center gap-2">
+                                <Users className="h-3.5 w-3.5 shrink-0" />
                                 <span>
                                     {event.attendees}
                                     {event.maxAttendees && `/${event.maxAttendees}`}
